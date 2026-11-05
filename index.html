@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>객석 리허설</title>
+  <meta name="description" content="공연장 3D 공공데이터로 시야 가림 좌석을 예매 전에 찾아내는 서비스" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🎭</span>
+      <div>
+        <h1>객석 리허설</h1>
+        <p class="tagline">무대는 리허설을 하는데, 객석은 왜 안 하나요?</p>
+      </div>
+    </div>
+    <div class="venue-pill" id="venueName">KSPO DOME</div>
+  </header>
+
+  <main class="layout">
+    <section class="viewer" id="viewer" aria-label="공연장 3D 보기">
+      <div class="loading" id="loading">공연장 불러오는 중…</div>
+      <div class="tooltip" id="tooltip" hidden></div>
+      <div class="hint hint-home">좌석 클릭: 그 자리에서 보기 · 드래그: 회전 · 휠: 확대</div>
+      <div class="hint hint-seat">드래그: 고개 돌리기 · 다른 좌석 클릭: 이동 · Esc: 돌아가기</div>
+      <div class="seatcard" id="seatCard" hidden>
+        <div class="sc-head"><strong id="scTitle"></strong><span class="chip" id="scGrade"></span></div>
+        <p id="scDesc"></p>
+        <button id="scBack">← 전체 보기</button>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>무대 구성</h2>
+      <p class="help">무대 형태를 고르고, 구조물을 끌어서 옮겨 보세요.</p>
+      <div class="seg" id="presets" role="group" aria-label="무대 형태">
+        <button data-preset="end" class="on">엔드</button>
+        <button data-preset="center">센터</button>
+        <button data-preset="thrust">엔드+돌출</button>
+      </div>
+      <div class="add-row">
+        <button class="ghost" id="addLed">＋ LED 벽</button>
+        <button class="ghost" id="addTower">＋ 스피커 타워</button>
+      </div>
+
+      <div class="selected" id="selected" hidden>
+        <div class="sel-head"><span class="sel-dot" id="selDot"></span><strong id="selName"></strong></div>
+        <label>폭 <output id="wOut"></output>
+          <input type="range" id="wIn" min="1" max="40" step="0.5" />
+        </label>
+        <label>높이 <output id="hOut"></output>
+          <input type="range" id="hIn" min="0.5" max="20" step="0.5" />
+        </label>
+        <div class="add-row">
+          <button class="ghost" id="rotBtn">↻ 90° 회전</button>
+          <button class="ghost danger" id="delBtn">삭제</button>
+        </div>
+      </div>
+      <ul class="objlist" id="objList"></ul>
+
+      <h2 class="mt">시야 리포트</h2>
+      <div class="report" id="report">
+        <p class="headline" id="headline">계산 중…</p>
+        <div class="bar" id="bar"></div>
+        <ul class="legend" id="gradeList"></ul>
+        <p class="note">기준: 좌석 눈높이에서 무대 위 공연자(머리 높이) 지점들이 LED 벽·스피커 타워에 가리지 않고 보이는 비율. 플로어석은 아직 포함하지 않았어요.</p>
+      </div>
+      <div class="seg two" id="colorMode" role="group" aria-label="좌석 색 기준">
+        <button data-mode="vis" class="on">시야로 색칠</button>
+        <button data-mode="tier">높이로 색칠</button>
+      </div>
+
+      <h2 class="mt">공연장 정보</h2>
+      <dl class="stats">
+        <div><dt>좌석(고정석)</dt><dd id="seatCount">–</dd></div>
+        <div><dt>가장 높은 좌석</dt><dd id="maxHeight">–</dd></div>
+      </dl>
+      <h3>높이별 좌석</h3>
+      <ul class="legend" id="legend"></ul>
+      <p class="source">
+        데이터: 한국체육산업개발(주) 「올림픽공원 공연장 실감형 콘텐츠」(공공데이터포털 15127487) 3D 모델에서 좌석을 자동 추출
+      </p>
+    </aside>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
